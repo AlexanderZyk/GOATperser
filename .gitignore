@@ -1,0 +1,6 @@
+/client/node_modules
+/server/node_modules
+.idea
+server/.env
+client/.env
+client/build
