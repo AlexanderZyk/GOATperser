@@ -12,9 +12,13 @@ const app = express();
 
 app.use(express.json());
 app.use(cookieParser());
+const allowedOrigins = (process.env.CLIENT_URL || '').split(',').map(o => o.trim()).filter(Boolean);
 app.use(cors({
     credentials: true,
-    origin: process.env.CLIENT_URL
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+        callback(new Error('Not allowed by CORS'));
+    }
 }));
 app.use('/api', router);
 app.use(errorMiddleware);
