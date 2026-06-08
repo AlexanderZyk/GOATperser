@@ -20,7 +20,6 @@ const corsOptions = {
         callback(new Error('Not allowed by CORS'));
     }
 };
-app.options('*', cors(corsOptions));
 app.use(cors(corsOptions));
 app.use('/api', router);
 app.use(errorMiddleware);
