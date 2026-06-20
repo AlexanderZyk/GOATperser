@@ -5,6 +5,7 @@ import { formatRub } from '../utils/formatPrice';
 import { toRuSize } from '../utils/convertSize';
 import { Context } from '../index';
 import { observer } from 'mobx-react-lite';
+import { proxyImage } from '../utils/proxyImage';
 
 interface HistoryItem {
     url: string;
@@ -123,7 +124,7 @@ const ParserPage: FC = () => {
                 setHistory(prev => saveHistory({
                     url: target,
                     name: res.data.name,
-                    image: res.data.images?.[0],
+                    image: res.data.images?.[0] ? proxyImage(res.data.images[0]) : undefined,
                 }, prev, userId));
             } else if (res.data?.name && !isValidProduct(res.data.name)) {
                 throw new Error('Товар не найден на GOAT. Проверьте правильность ссылки.');
@@ -197,7 +198,7 @@ const ParserPage: FC = () => {
                             onClick={() => product.images.length > 0 && openLightbox(activeImage)}
                         >
                             {product.images.length > 0 ? (
-                                <img src={product.images[activeImage]} alt={product.name} />
+                                <img src={proxyImage(product.images[activeImage])} alt={product.name} />
                             ) : (
                                 <div className="product-card__no-image">Нет фото</div>
                             )}
@@ -207,7 +208,7 @@ const ParserPage: FC = () => {
                                 {product.images.map((img, i) => (
                                     <img
                                         key={i}
-                                        src={img}
+                                        src={proxyImage(img)}
                                         alt=""
                                         className={`product-card__thumb ${i === activeImage ? 'product-card__thumb--active' : ''}`}
                                         onClick={() => setActiveImage(i)}
@@ -322,7 +323,7 @@ const ParserPage: FC = () => {
                     )}
                     <img
                         className="lightbox__img"
-                        src={product.images[lightboxIndex]}
+                        src={proxyImage(product.images[lightboxIndex])}
                         alt={product.name}
                         onClick={e => e.stopPropagation()}
                     />

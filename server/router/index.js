@@ -22,6 +22,25 @@ router.put('/profile', authMiddleware, userController.updateProfile);
 router.put('/password', authMiddleware, userController.changePassword);
 
 router.post('/parse', parserController.parse);
+router.get('/image', async (req, res) => {
+    const url = req.query.url;
+    if (!url || !url.startsWith('https://image.goat.com/')) {
+        return res.status(400).end();
+    }
+    try {
+        const response = await fetch(url, {
+            headers: { 'Referer': 'https://www.goat.com/', 'User-Agent': 'Mozilla/5.0' }
+        });
+        if (!response.ok) return res.status(response.status).end();
+        const contentType = response.headers.get('content-type') || 'image/jpeg';
+        res.set('Content-Type', contentType);
+        res.set('Cache-Control', 'public, max-age=86400');
+        const buffer = await response.arrayBuffer();
+        res.send(Buffer.from(buffer));
+    } catch {
+        res.status(502).end();
+    }
+});
 
 router.get('/cart', authMiddleware, cartController.getCart);
 router.post('/cart', authMiddleware, cartController.addToCart);
